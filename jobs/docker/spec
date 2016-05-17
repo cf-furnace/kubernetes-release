@@ -2,6 +2,7 @@
 name: docker
 
 packages:
+  - aufs-tools
   - docker
   - common
 

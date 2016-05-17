@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+cp aufs-tools/aufs-tools_3.2+20130722-1.1_amd64.deb ${BOSH_INSTALL_TARGET}
+
+cd ${BOSH_INSTALL_TARGET}
+ln -s aufs-tools_3.2+20130722-1.1_amd64.deb aufs-tools_amd64.deb

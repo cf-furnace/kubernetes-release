@@ -1,0 +1,7 @@
+---
+name: aufs-tools
+
+dependencies: {}
+
+files:
+  - aufs-tools/aufs-tools*

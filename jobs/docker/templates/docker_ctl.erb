@@ -15,7 +15,10 @@ DOCKER_GRAPH_DIR="/var/vcap/data/docker/graph"
 case $1 in
 
   start)
-  pid_guard ${PIDFILE} "docker"
+    pid_guard ${PIDFILE} "docker"
+
+    # Install aufs-tools
+    dpkg -i /var/vcap/packages/aufs-tools/aufs-tools_amd64.deb
 
     mkdir -p $RUN_DIR
     chown -R vcap:vcap $RUN_DIR
@@ -65,8 +68,9 @@ case $1 in
     ;;
 
   stop)
-    # Stop containers
+    # Stop containers - should be in drain
     docker_cmd="/var/vcap/packages/docker/bin/docker -H unix:///var/vcap/sys/run/docker/docker.sock"
+
     running_containers=$($docker_cmd ps -q)
     if [ -n "${running_containers}" ]; then
       $docker_cmd kill $running_containers

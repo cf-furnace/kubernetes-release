@@ -223,6 +223,8 @@ jobs:
     networks:
       - name: kubernetes
         static_ips: [ *etcd_address_1 ]
+    update:
+      serial: true
     properties:
       consul:
         agent:
@@ -271,10 +273,12 @@ jobs:
     resource_pool: kube-master
     networks:
       - name: kubernetes
+    update:
+      serial: true
 
 update:
   canaries: 1
   max_in_flight: 3
   serial: false
-  canary_watch_time: 1000-30000
-  update_watch_time: 1000-30000
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000
