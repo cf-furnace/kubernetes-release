@@ -191,3 +191,4 @@ jobs:
           releases:
           - consul-release-tarball/*.tgz
           - etcd-release-tarball/*.tgz
+          - kubernetes-release-tarball/*.tgz
