@@ -134,7 +134,7 @@ jobs:
             - |
               set -e
               bosh -n create release --version $(date "+%s") --with-tarball --name kubernetes --dir kubernetes-release
-              cp kubernetes-release/dev_releases/kubernetes/*.tgz kubernetes-release-tarball
+              cp kubernetes-release/dev_releases/kubernetes/*.tgz kubernetes-release-tarball/
       - task: generate-manifests
         config:
           image_resource:
