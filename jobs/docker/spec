@@ -1,0 +1,17 @@
+---
+name: docker
+
+packages:
+  - docker
+  - common
+
+templates:
+  docker_ctl.erb: bin/docker_ctl
+
+properties:
+  docker.user:
+    description: 'User which will own the Docker services'
+    default: 'root'
+  docker.group:
+    description: 'Group which will own the Docker services'
+    default: 'vcap'

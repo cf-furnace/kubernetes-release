@@ -1,0 +1,12 @@
+---
+name: kube-node
+
+packages:
+  - common
+  - kubernetes
+
+templates:
+  kube-proxy_ctl.erb: bin/kube-proxy_ctl
+  kubelet_ctl.erb: bin/kubelet_ctl
+
+properties: {}

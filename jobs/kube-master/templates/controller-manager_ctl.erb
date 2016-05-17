@@ -1,0 +1,37 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/controller-manager
+LOG_DIR=/var/vcap/sys/log/controller-manager
+PIDFILE=$RUN_DIR/controller-manager.pid
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "controller-manager"
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+
+    echo $$ > $PIDFILE
+
+    exec chpst -u vcap:vcap /var/vcap/packages/kubernetes/bin/hyperkube controller-manager \
+        --master=127.0.0.1:8080 \
+        --logtostderr=true \
+        2> >(tee -a $LOG_DIR/controller-manager.stderr.log | logger -p user.info -t vcap.controller-manager) \
+        1> >(tee -a $LOG_DIR/controller-manager.stdout.log | logger -p user.error -t vcap.controller-manager)
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+    ;;
+
+  *)
+    echo "Usage: controller-manager_ctl {start|stop}"
+    ;;
+
+esac

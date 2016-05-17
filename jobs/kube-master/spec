@@ -1,0 +1,15 @@
+---
+name: kube-master
+
+packages:
+  - kubernetes
+  - common
+
+templates:
+  apiserver_ctl.erb: bin/apiserver_ctl
+  controller-manager_ctl.erb: bin/controller-manager_ctl
+  scheduler_ctl.erb: bin/scheduler_ctl
+
+properties:
+  kubernetes.etcd.machines:
+    descriptions: List of etcd cluster members

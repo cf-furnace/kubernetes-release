@@ -1,0 +1,37 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/scheduler
+LOG_DIR=/var/vcap/sys/log/scheduler
+PIDFILE=$RUN_DIR/scheduler.pid
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "scheduler"
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+
+    echo $$ > $PIDFILE
+
+    exec chpst -u vcap:vcap /var/vcap/packages/kubernetes/bin/hyperkube scheduler \
+        --master=127.0.0.1:8080 \
+        --logtostderr=true \
+        2> >(tee -a $LOG_DIR/scheduler.stderr.log | logger -p user.info -t vcap.scheduler) \
+        1> >(tee -a $LOG_DIR/scheduler.stdout.log | logger -p user.error -t vcap.scheduler)
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+    ;;
+
+  *)
+    echo "Usage: scheduler_ctl {start|stop}"
+    ;;
+
+esac

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/kubelet
+LOG_DIR=/var/vcap/sys/log/kubelet
+PIDFILE=$RUN_DIR/kubelet.pid
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "kubelet"
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+
+    echo $$ > $PIDFILE
+
+    exec chpst -u vcap:vcap /var/vcap/packages/kubernetes/bin/hyperkube kubelet \
+        --api-servers=http://kube-apiserver.service.cf.internal:8080 \
+        --docker-endpoint=unix:///var/vcap/sys/run/docker/docker.sock \
+        --root-dir=/var/vcap/sys/run/kubelet \
+        --cert-dir=/var/vcap/sys/run/kubelet/certs \
+        --logtostderr=true \
+        2> >(tee -a $LOG_DIR/kubelet.stderr.log | logger -p user.info -t vcap.kubelet) \
+        1> >(tee -a $LOG_DIR/kubelet.stdout.log | logger -p user.error -t vcap.kubelet)
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+    ;;
+
+  *)
+    echo "Usage: kubelet_ctl {start|stop}"
+    ;;
+
+esac

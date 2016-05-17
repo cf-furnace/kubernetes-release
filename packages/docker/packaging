@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+mkdir -p output
+tar zxvf docker/docker-1.11.1.tgz -C output
+
+mkdir -p ${BOSH_INSTALL_TARGET}/bin
+cp -a output/docker/* ${BOSH_INSTALL_TARGET}/bin
