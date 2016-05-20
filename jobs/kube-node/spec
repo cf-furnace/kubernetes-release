@@ -2,8 +2,8 @@
 name: kube-node
 
 packages:
-  - common
-  - kubernetes
+- common
+- kubernetes
 
 templates:
   kube-proxy_ctl.erb: bin/kube-proxy_ctl

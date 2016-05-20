@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+mkdir -p output
+tar zxvf flannel/flannel-0.5.5-linux-amd64.tar.gz -C output
+
+mkdir -p ${BOSH_INSTALL_TARGET}/bin
+cp -a output/flannel-0.5.5/flanneld ${BOSH_INSTALL_TARGET}/bin

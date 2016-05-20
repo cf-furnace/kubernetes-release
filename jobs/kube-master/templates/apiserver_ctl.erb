@@ -22,7 +22,8 @@ case $1 in
     exec chpst -u vcap:vcap /var/vcap/packages/kubernetes/bin/hyperkube apiserver \
         --insecure-bind-address=0.0.0.0 \
         --insecure-port=8080 \
-        --etcd-servers="<%= p("kubernetes.etcd.machines").map{ |addr| "http://#{addr}:4001" }.join(',') %>" \
+        --secure-port=0 \
+        --etcd-servers='<%= p("kubernetes.etcd.machines").map{ |addr| "http://#{addr}:4001" }.join(",") %>' \
         --service-cluster-ip-range=10.254.0.0/16 \
         --logtostderr=true \
         2> >(tee -a $LOG_DIR/apiserver.stderr.log | logger -p user.info -t vcap.apiserver) \

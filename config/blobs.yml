@@ -11,3 +11,7 @@ kubernetes/kubernetes-1.2.4.tar.gz:
   object_id: 1f300a0f-e233-41cc-84a1-23630d5a22f9
   sha: f3aea83f8f0e16b2b41998a2edc09eb42fd8d945
   size: 496696744
+flannel/flannel-0.5.5-linux-amd64.tar.gz:
+  object_id: 7da6b71f-817e-418c-81d1-5b56494aa3a3
+  sha: fab60fdf23b029fa39badc008fe951bce5046caa
+  size: 3489977

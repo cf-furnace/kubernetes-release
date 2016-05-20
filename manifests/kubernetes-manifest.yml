@@ -3,29 +3,29 @@ name: kubernetes
 director_uuid: <%= `bosh target lite > /dev/null 2>&1 && bosh status --uuid` %>
 
 releases:
-  - name: etcd
-    version: latest
-  - name: consul
-    version: latest
-  - name: kubernetes
-    version: latest
+- name: etcd
+  version: latest
+- name: consul
+  version: latest
+- name: kubernetes
+  version: latest
 
 networks:
-  - name: kubernetes
-    subnets:
-      - range: 10.244.24.0/24
-        reserved: [10.244.24.1]
-        static:
-          - &etcd_address_1 10.244.24.2
-        cloud_properties: {}
+- name: kubernetes
+  subnets:
+  - range: 10.244.24.0/24
+    reserved: [10.244.24.1]
+    static:
+      - &etcd_address_1 10.244.24.2
+    cloud_properties: {}
 
 resource_pools:
-  - name: kube-master
-    network: kubernetes
-    stemcell:
-      name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-      version: latest
-    cloud_properties: {}
+- name: kube-master
+  network: kubernetes
+  stemcell:
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    version: latest
+  cloud_properties: {}
 
 compilation:
   workers: 3
@@ -212,69 +212,81 @@ properties:
     machines: [ *etcd_address_1 ]
 
 jobs:
-  - name: kube-etcd
-    instances: 1
-    templates:
-      - name: consul_agent
-        release: consul
-      - name: etcd
-        release: etcd
-    resource_pool: kube-master
-    networks:
-      - name: kubernetes
-        static_ips: [ *etcd_address_1 ]
-    update:
-      serial: true
-    properties:
-      consul:
-        agent:
-          mode: server
-          services:
-            kube-etcd:
-              name: kube-etcd
-              check:
-                script: /bin/true # TODO
-                interval: 5s
-      etcd:
-        cluster_members: [ *etcd_address_1 ]
-        peer_require_ssl: false
-        require_ssl: false
+- name: kube-etcd
+  instances: 1
+  templates:
+  - name: consul_agent
+    release: consul
+  - name: etcd
+    release: etcd
+  resource_pool: kube-master
+  networks:
+  - name: kubernetes
+    static_ips: [ *etcd_address_1 ]
+  update:
+    serial: true
+  properties:
+    consul:
+      agent:
+        mode: server
+        services:
+          kube-etcd:
+            name: kube-etcd
+            check:
+              script: /bin/true # TODO
+              interval: 5s
+    etcd:
+      cluster_members: [ *etcd_address_1 ]
+      peer_require_ssl: false
+      require_ssl: false
+- name: kube-master
+  instances: 1
+  templates:
+  - name: consul_agent
+    release: consul
   - name: kube-master
-    instances: 1
-    templates:
-      - name: consul_agent
-        release: consul
-      - name: kube-master
-        release: kubernetes
-    resource_pool: kube-master
-    networks:
-      - name: kubernetes
-    properties:
-      consul:
-        agent:
-          services:
-            kube-apiserver:
-              name: kube-apiserver
-              check:
-                script: /bin/true # TODO
-                interval: 5s
-      kubernetes:
-        etcd:
-          machines: [ *etcd_address_1 ]
+    release: kubernetes
+  resource_pool: kube-master
+  networks:
+  - name: kubernetes
+  properties:
+    consul:
+      agent:
+        services:
+          kube-apiserver:
+            name: kube-apiserver
+            check:
+              script: /bin/true # TODO
+              interval: 5s
+    kubernetes:
+      etcd:
+        machines: [ *etcd_address_1 ]
+- name: kube-node
+  instances: 2
+  templates:
+  - name: consul_agent
+    release: consul
+  - name: flannel
+    release: kubernetes
+  - name: docker
+    release: kubernetes
   - name: kube-node
-    instances: 1
-    templates:
-      - name: consul_agent
-        release: consul
-      - name: docker
-        release: kubernetes
-      - name: kube-node
-        release: kubernetes
-    resource_pool: kube-master
-    networks:
-      - name: kubernetes
-    update:
-      serial: true
+    release: kubernetes
+  resource_pool: kube-master
+  networks:
+  - name: kubernetes
+  update:
+    serial: true
+  properties:
+    flannel:
+      etcd:
+        machines: [ *etcd_address_1 ]
+      network:
+        config:
+          Network: 10.244.32.0/19
+          Backend:
+            Type: vxlan
+            VNI: 14000
 
 update:
   canaries: 1

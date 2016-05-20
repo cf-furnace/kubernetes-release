@@ -2,9 +2,9 @@
 name: docker
 
 packages:
-  - aufs-tools
-  - docker
-  - common
+- aufs-tools
+- docker
+- common
 
 templates:
   docker_ctl.erb: bin/docker_ctl

@@ -19,12 +19,16 @@ case $1 in
 
     echo $$ > $PIDFILE
 
-    exec chpst -u vcap:vcap /var/vcap/packages/kubernetes/bin/hyperkube kubelet \
+    mount -o remount,rw /sys
+
+    # add --config to point to manifests
+    exec /var/vcap/packages/kubernetes/bin/hyperkube kubelet \
         --api-servers=http://kube-apiserver.service.cf.internal:8080 \
-        --docker-endpoint=unix:///var/vcap/sys/run/docker/docker.sock \
-        --root-dir=/var/vcap/sys/run/kubelet \
         --cert-dir=/var/vcap/sys/run/kubelet/certs \
+        --docker-endpoint=unix:///var/vcap/sys/run/docker/docker.sock \
+        --hostname-override=<%= "#{name.gsub('_', '-')}-#{spec.index}.node.cf.internal" %> \
         --logtostderr=true \
+        --root-dir=/var/vcap/sys/run/kubelet \
         2> >(tee -a $LOG_DIR/kubelet.stderr.log | logger -p user.info -t vcap.kubelet) \
         1> >(tee -a $LOG_DIR/kubelet.stdout.log | logger -p user.error -t vcap.kubelet)
     ;;

@@ -2,8 +2,8 @@
 name: kube-master
 
 packages:
-  - kubernetes
-  - common
+- kubernetes
+- common
 
 templates:
   apiserver_ctl.erb: bin/apiserver_ctl

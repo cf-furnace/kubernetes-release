@@ -57,14 +57,20 @@ case $1 in
 
     export PATH=/var/vcap/packages/docker/bin:$PATH
 
+    if [ -f /var/vcap/sys/run/flannel/subnet.env ]; then
+      source /var/vcap/sys/run/flannel/subnet.env
+      FLANNEL_OPTS="--bip ${FLANNEL_SUBNET} --mtu ${FLANNEL_MTU}"
+    fi
+
     # Start Docker daemon
     exec chpst -u ${DOCKER_USER}:${DOCKER_GROUP} docker daemon \
-        --group ${DOCKER_GROUP} \
-        --pidfile ${PIDFILE} \
-        --graph ${DOCKER_GRAPH_DIR} \
-        --host unix://${RUN_DIR}/docker.sock \
-        >>${LOG_DIR}/docker.stdout.log \
-        2>>${LOG_DIR}/docker.stderr.log
+      ${FLANNEL_OPTS:-} \
+      --graph ${DOCKER_GRAPH_DIR} \
+      --group ${DOCKER_GROUP} \
+      --host unix://${RUN_DIR}/docker.sock \
+      --pidfile ${PIDFILE} \
+      1> >(tee -a ${LOG_DIR}/docker.stdout.log | logger -p user.info -t vcap.docker) \
+      2> >(tee -a ${LOG_DIR}/docker.stderr.log | logger -p user.error -t vcap.docker)
     ;;
 
   stop)

@@ -4,4 +4,4 @@ name: docker
 dependencies: {}
 
 files:
-  - docker/docker-1.11.1.tgz
+- docker/docker-1.11.1.tgz

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -e
+
+RUN_DIR=/var/vcap/sys/run/flannel
+LOG_DIR=/var/vcap/sys/log/flannel
+PIDFILE=${RUN_DIR}/flannel.pid
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+
+  start)
+    pid_guard ${PIDFILE} "flannel"
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+
+    # TODO: Changing network configuration will cause trouble
+    curl <%= "http://#{p('flannel.etcd.machines').first}:4001/v2/keys/coreos.com/network/config" %> \
+      -X PUT \
+      -d 'value=<%= JSON.pretty_generate p("flannel.network.config") %>'
+
+    echo $$ > ${PIDFILE}
+
+    exec /var/vcap/packages/flannel/bin/flanneld \
+      --etcd-endpoints='<%= p("flannel.etcd.machines").map{ |addr| "http://#{addr}:4001" }.join(",") %>' \
+      --subnet-file=${RUN_DIR}/subnet.env \
+      1> >(tee -a ${LOG_DIR}/flannel.stdout.log | logger -p user.info -t vcap.flanneld) \
+      2> >(tee -a ${LOG_DIR}/flannel.stderr.log | logger -p user.error -t vcap.flanneld)
+    ;;
+
+  stop)
+    kill_and_wait ${PIDFILE}
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+
+esac
+exit 0

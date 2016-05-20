@@ -1,0 +1,17 @@
+---
+name: flannel
+
+packages:
+- flannel
+- common
+
+templates:
+  flannel_ctl.erb: bin/flannel_ctl
+
+properties:
+  flannel.etcd.machines:
+    descriptions: List of etcd cluster members
+
+  flannel.network.config:
+    description: Hash of flannel network configuration properties
+    default: {}
