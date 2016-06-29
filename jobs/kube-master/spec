@@ -12,4 +12,4 @@ templates:
 
 properties:
   kubernetes.etcd.machines:
-    descriptions: List of etcd cluster members
+    description: List of etcd cluster members

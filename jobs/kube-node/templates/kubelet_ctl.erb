@@ -25,6 +25,8 @@ case $1 in
     exec /var/vcap/packages/kubernetes/bin/hyperkube kubelet \
         --api-servers=http://kube-apiserver.service.cf.internal:8080 \
         --cert-dir=/var/vcap/sys/run/kubelet/certs \
+        --cluster-dns=<%= p("kube.cluster_dns_address") %> \
+        --cluster-domain=<%= p("kube.cluster_dns_domain") %> \
         --docker-endpoint=unix:///var/vcap/sys/run/docker/docker.sock \
         --hostname-override=<%= "#{name.gsub('_', '-')}-#{spec.index}.node.cf.internal" %> \
         --logtostderr=true \
