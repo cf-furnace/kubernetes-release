@@ -4,4 +4,4 @@ name: kubernetes
 dependencies:
 
 files:
-- kubernetes/kubernetes-1.2.4.tar.gz
+- kubernetes/kubernetes-1.3.0.tar.gz

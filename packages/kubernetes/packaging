@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -x
 
-k8s_version=1.2.4
+k8s_version=1.3.0
 
 tar zxvf kubernetes/kubernetes-${k8s_version}.tar.gz kubernetes/server/kubernetes-server-linux-amd64.tar.gz
 mv kubernetes/server/kubernetes-server-linux-amd64.tar.gz .
