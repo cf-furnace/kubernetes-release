@@ -20,6 +20,9 @@ networks:
       - 10.244.24.2
     cloud_properties: {}
 
+compilation:
+  cloud_properties: {}
+
 resource_pools:
 - name: kube-etcd
   cloud_properties: {}
