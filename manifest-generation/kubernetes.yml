@@ -1,0 +1,151 @@
+---
+name: (( merge || meta.environment "-kube" ))
+
+director_uuid: (( merge ))
+
+releases:
+- name: etcd
+  version: latest
+- name: consul
+  version: latest
+- name: kubernetes
+  version: latest
+
+networks: (( merge ))
+
+compilation:
+  <<: (( merge ))
+  workers: 3
+  network: kubernetes
+  reuse_compilation_vms: true
+  cloud_properties: {}
+
+update:
+  canaries: 1
+  max_in_flight: 3
+  serial: false
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000
+
+resource_pools:
+- name: kube-etcd
+  network: kubernetes
+  stemcell: (( meta.stemcell ))
+  env: (( merge || meta.default_env ))
+  cloud_properties: (( merge ))
+
+- name: kube-master
+  network: kubernetes
+  stemcell: (( meta.stemcell ))
+  env: (( merge || meta.default_env ))
+  cloud_properties: (( merge ))
+
+- name: kube-node
+  network: kubernetes
+  stemcell: (( meta.stemcell ))
+  env: (( merge || meta.default_env ))
+  cloud_properties: (( merge ))
+
+meta:
+  <<: (( merge ))
+  consul_servers: (( merge ))
+  default_env: {}
+  environment: (( merge ))
+  stemcell: (( merge ))
+
+properties:
+  <<: (( merge ))
+
+  consul:
+    agent:
+      domain: cf.internal
+      log_level: ~
+      servers:
+        lan: (( meta.consul_servers ))
+    agent_cert: (( merge ))
+    agent_key: (( merge ))
+    ca_cert: (( merge ))
+    encrypt_keys: (( merge ))
+    server_cert: (( merge ))
+    server_key: (( merge ))
+
+  etcd:
+    machines:
+    - (( "kube-etcd.service." consul.agent.domain ))
+    require_ssl: false
+    peer_require_ssl: false
+
+  flannel:
+    etcd:
+      machines: (( properties.etcd.machines ))
+    network:
+      config:
+        Network: 10.244.32.0/19
+        Backend:
+          Type: vxlan
+          VNI: 14000
+
+  kubernetes:
+    etcd:
+      machines: (( properties.etcd.machines ))
+
+jobs:
+- name: kube-etcd
+  instances: 1
+  templates:
+  - name: consul_agent
+    release: consul
+  - name: etcd
+    release: etcd
+  resource_pool: kube-etcd
+  default_networks:
+  - name: kubernetes
+  networks: (( merge || default_networks ))
+  update:
+    serial: true
+  properties:
+    consul:
+      agent:
+        services:
+          kube-etcd:
+            name: kube-etcd
+            check:
+              script: /bin/true # TODO
+              interval: 5s
+
+- name: kube-master
+  instances: 1
+  templates:
+  - name: consul_agent
+    release: consul
+  - name: kube-master
+    release: kubernetes
+  resource_pool: kube-master
+  networks:
+  - name: kubernetes
+  properties:
+    consul:
+      agent:
+        services:
+          kube-apiserver:
+            name: kube-apiserver
+            check:
+              script: /bin/true # TODO
+              interval: 5s
+
+- name: kube-node
+  instances: 2
+  templates:
+  - name: consul_agent
+    release: consul
+  - name: flannel
+    release: kubernetes
+  - name: docker
+    release: kubernetes
+  - name: kube-node
+    release: kubernetes
+  resource_pool: kube-node
+  networks:
+  - name: kubernetes
+  update:
+    serial: true

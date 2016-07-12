@@ -1,94 +1,41 @@
-compilation:
-  cloud_properties: {}
-  network: kubernetes
-  reuse_compilation_vms: true
-  workers: 3
+---
+name: kubernetes
+
 director_uuid: <%= `bosh target lite > /dev/null 2>&1 && bosh status --uuid` %>
-jobs:
-- default_networks:
-  - name: kubernetes
-  instances: 1
-  name: kube-etcd
-  networks:
-  - name: kubernetes
-  properties:
-    consul:
-      agent:
-        services:
-          kube-etcd:
-            check:
-              interval: 5s
-              script: /bin/true
-            name: kube-etcd
-  resource_pool: kube-etcd
-  templates:
-  - name: consul_agent
-    release: consul
-  - name: etcd
-    release: etcd
-  update:
-    serial: true
-- instances: 1
-  name: kube-master
-  networks:
-  - name: kubernetes
-  properties:
-    consul:
-      agent:
-        services:
-          kube-apiserver:
-            check:
-              interval: 5s
-              script: /bin/true
-            name: kube-apiserver
-  resource_pool: kube-master
-  templates:
-  - name: consul_agent
-    release: consul
-  - name: kube-master
-    release: kubernetes
-- instances: 2
-  name: kube-node
-  networks:
-  - name: kubernetes
-  resource_pool: kube-node
-  templates:
-  - name: consul_agent
-    release: consul
-  - name: flannel
-    release: kubernetes
-  - name: docker
-    release: kubernetes
-  - name: kube-node
-    release: kubernetes
-  update:
-    serial: true
+
 meta:
   consul_servers:
   - 10.244.0.54
-  default_env: {}
   environment: cf-furnace
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
     version: latest
-name: kubernetes
+
 networks:
 - name: kubernetes
   subnets:
-  - cloud_properties: {}
-    range: 10.244.24.0/24
-    reserved:
-    - 10.244.24.1
+  - range: 10.244.24.0/24
+    reserved: [10.244.24.1]
     static:
-    - 10.244.24.2
+      - 10.244.24.2
+    cloud_properties: {}
+
+resource_pools:
+- name: kube-etcd
+  cloud_properties: {}
+
+- name: kube-master
+  cloud_properties: {}
+
+- name: kube-node
+  cloud_properties: {}
+
 properties:
   consul:
     agent:
       domain: cf.internal
-      log_level: null
       servers:
-        lan:
-        - 10.244.0.54
+        lan: (( meta.consul_servers ))
     agent_cert: |+
       -----BEGIN CERTIFICATE-----
       MIIEITCCAgugAwIBAgIQTDMCJHBiQrY8hlM78doHTzALBgkqhkiG9w0BAQswEzER
@@ -229,58 +176,3 @@ properties:
       EroZtdjv1A9NVpCHJM7a/3nl0aALEsn3JKYEuG4HCY/oJ7rPpJItfrJ3MUTn/uqD
       BKcJHlf9kYxFaLL17iOq9rY0+LURr63BkRa2uyn489luxcHnTjk=
       -----END RSA PRIVATE KEY-----
-  etcd:
-    machines:
-    - kube-etcd.service.cf.internal
-    peer_require_ssl: false
-    require_ssl: false
-  flannel:
-    etcd:
-      machines:
-      - kube-etcd.service.cf.internal
-    network:
-      config:
-        Backend:
-          Type: vxlan
-          VNI: 14000
-        Network: 10.244.32.0/19
-  kubernetes:
-    etcd:
-      machines:
-      - kube-etcd.service.cf.internal
-releases:
-- name: etcd
-  version: latest
-- name: consul
-  version: latest
-- name: kubernetes
-  version: latest
-resource_pools:
-- cloud_properties: {}
-  env: {}
-  name: kube-etcd
-  network: kubernetes
-  stemcell:
-    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-    version: latest
-- cloud_properties: {}
-  env: {}
-  name: kube-master
-  network: kubernetes
-  stemcell:
-    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-    version: latest
-- cloud_properties: {}
-  env: {}
-  name: kube-node
-  network: kubernetes
-  stemcell:
-    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-    version: latest
-update:
-  canaries: 1
-  canary_watch_time: 1000-60000
-  max_in_flight: 3
-  serial: false
-  update_watch_time: 1000-60000
-
