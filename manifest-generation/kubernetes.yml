@@ -15,10 +15,10 @@ networks: (( merge ))
 
 compilation:
   <<: (( merge ))
-  workers: 3
+  workers: (( merge || 3 ))
   network: kubernetes
   reuse_compilation_vms: true
-  cloud_properties: {}
+  cloud_properties: (( merge ))
 
 update:
   canaries: 1
