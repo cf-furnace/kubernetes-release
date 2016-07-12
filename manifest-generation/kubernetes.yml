@@ -121,8 +121,9 @@ jobs:
   - name: kube-master
     release: kubernetes
   resource_pool: kube-master
-  networks:
+  default_networks:
   - name: kubernetes
+  networks: (( merge || default_networks ))
   properties:
     consul:
       agent:
@@ -145,7 +146,9 @@ jobs:
   - name: kube-node
     release: kubernetes
   resource_pool: kube-node
-  networks:
+  default_networks:
   - name: kubernetes
+    static_ips: (( static_ips(0, 1, 2, 3) ))
+  networks: (( merge || default_networks ))
   update:
     serial: true

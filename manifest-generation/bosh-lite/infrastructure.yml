@@ -17,7 +17,7 @@ networks:
   - range: 10.244.24.0/24
     reserved: [10.244.24.1]
     static:
-      - 10.244.24.2
+      - 10.244.24.2-10.244.24.10
     cloud_properties: {}
 
 compilation:

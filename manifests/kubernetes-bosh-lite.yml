@@ -28,7 +28,9 @@ jobs:
     release: etcd
   update:
     serial: true
-- instances: 1
+- default_networks:
+  - name: kubernetes
+  instances: 1
   name: kube-master
   networks:
   - name: kubernetes
@@ -47,10 +49,18 @@ jobs:
     release: consul
   - name: kube-master
     release: kubernetes
-- instances: 2
+- default_networks:
+  - name: kubernetes
+    static_ips:
+    - 10.244.24.2
+    - 10.244.24.3
+  instances: 2
   name: kube-node
   networks:
   - name: kubernetes
+    static_ips:
+    - 10.244.24.2
+    - 10.244.24.3
   resource_pool: kube-node
   templates:
   - name: consul_agent
@@ -80,7 +90,7 @@ networks:
     reserved:
     - 10.244.24.1
     static:
-    - 10.244.24.2
+    - 10.244.24.2-10.244.24.10
 properties:
   consul:
     agent:
