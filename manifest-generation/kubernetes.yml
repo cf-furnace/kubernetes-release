@@ -148,7 +148,7 @@ jobs:
   resource_pool: kube-node
   default_networks:
   - name: kubernetes
-    static_ips: (( static_ips(0, 1, 2, 3) ))
+    static_ips: (( static_ips(0, 1, 2) ))
   networks: (( merge || default_networks ))
   update:
     serial: true
