@@ -6,6 +6,7 @@ director_uuid: <%= `bosh target lite > /dev/null 2>&1 && bosh status --uuid` %>
 meta:
   consul_servers:
   - 10.244.0.54
+  domain: bosh-lite.com
   environment: cf-furnace
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent

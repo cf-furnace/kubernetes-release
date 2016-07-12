@@ -50,6 +50,7 @@ meta:
   <<: (( merge ))
   consul_servers: (( merge ))
   default_env: {}
+  domain: (( merge ))
   environment: (( merge ))
   stemcell: (( merge ))
 
@@ -120,6 +121,8 @@ jobs:
     release: consul
   - name: kube-master
     release: kubernetes
+  - name: route-registrar
+    release: kubernetes
   resource_pool: kube-master
   networks:
   - name: kubernetes
@@ -132,6 +135,13 @@ jobs:
             check:
               script: /bin/true # TODO
               interval: 5s
+    route_registrar:
+      routes:
+      - name: kube-api-server
+        registration_interval: 30s
+        port: 8080
+        uris:
+        - (( "apiserver.kube." meta.domain ))
 
 - name: kube-node
   instances: 2

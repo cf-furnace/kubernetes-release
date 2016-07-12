@@ -41,11 +41,20 @@ jobs:
               interval: 5s
               script: /bin/true
             name: kube-apiserver
+    route_registrar:
+      routes:
+      - name: kube-api-server
+        port: 8080
+        registration_interval: 30s
+        uris:
+        - apiserver.kube.bosh-lite.com
   resource_pool: kube-master
   templates:
   - name: consul_agent
     release: consul
   - name: kube-master
+    release: kubernetes
+  - name: route-registrar
     release: kubernetes
 - instances: 2
   name: kube-node
@@ -67,6 +76,7 @@ meta:
   consul_servers:
   - 10.244.0.54
   default_env: {}
+  domain: bosh-lite.com
   environment: cf-furnace
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent

@@ -1,0 +1,8 @@
+---
+name: route-registrar
+
+dependencies:
+- golang
+
+files:
+  - github.com/cloudfoundry-incubator/route-registrar/**/*.go
