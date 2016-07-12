@@ -3,14 +3,6 @@ aufs-tools/aufs-tools_3.2+20130722-1.1_amd64.deb:
   object_id: e1f7bd89-dcc2-46ea-9ba8-ce2716e66f73
   sha: 736922e32bf43facef617f8ea0bb9c7aa9efdcdb
   size: 92274
-docker/docker-1.11.1.tgz:
-  object_id: 957864f3-7831-4552-8c2e-dbec7c42be5a
-  sha: b7d6025beb6440341741ea9324655a267fba83f7
-  size: 20530566
-kubernetes/kubernetes-1.2.4.tar.gz:
-  object_id: 1f300a0f-e233-41cc-84a1-23630d5a22f9
-  sha: f3aea83f8f0e16b2b41998a2edc09eb42fd8d945
-  size: 496696744
 flannel/flannel-0.5.5-linux-amd64.tar.gz:
   object_id: 7da6b71f-817e-418c-81d1-5b56494aa3a3
   sha: fab60fdf23b029fa39badc008fe951bce5046caa
