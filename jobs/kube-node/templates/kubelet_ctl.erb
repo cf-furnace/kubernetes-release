@@ -27,9 +27,12 @@ case $1 in
         --cert-dir=/var/vcap/sys/run/kubelet/certs \
         --cluster-dns=<%= p("kube.cluster_dns_address") %> \
         --cluster-domain=<%= p("kube.cluster_dns_domain") %> \
+        --config=<%= p("kube.node.manifests_dir") %> \
+        --docker=unix:///var/vcap/sys/run/docker/docker.sock \
         --docker-endpoint=unix:///var/vcap/sys/run/docker/docker.sock \
         --hostname-override=<%= "#{name.gsub('_', '-')}-#{spec.index}.node.cf.internal" %> \
         --logtostderr=true \
+        --register-schedulable=<%= p("kube.node.register_schedulable") %> \
         --root-dir=/var/vcap/sys/run/kubelet \
         2> >(tee -a $LOG_DIR/kubelet.stderr.log | logger -p user.info -t vcap.kubelet) \
         1> >(tee -a $LOG_DIR/kubelet.stdout.log | logger -p user.error -t vcap.kubelet)

@@ -11,5 +11,5 @@ templates:
   scheduler_ctl.erb: bin/scheduler_ctl
 
 properties:
-  kubernetes.etcd.machines:
+  kube.etcd.machines:
     description: List of etcd cluster members

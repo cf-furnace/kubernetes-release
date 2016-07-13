@@ -85,9 +85,10 @@ properties:
           Type: vxlan
           VNI: 14000
 
-  kubernetes:
+  kube:
     etcd:
       machines: (( properties.etcd.machines ))
+    master_url: (( "http://" jobs.kube-master.networks.kubernetes.static_ips.[0] ":8080" ))
 
 jobs:
 - name: kube-etcd
@@ -120,9 +121,18 @@ jobs:
     release: consul
   - name: kube-master
     release: kubernetes
+  - name: flannel
+    release: kubernetes
+  - name: docker
+    release: kubernetes
+  - name: kube-node
+    release: kubernetes
+  - name: kube-addons
+    release: kubernetes
   resource_pool: kube-master
   default_networks:
   - name: kubernetes
+    static_ips: (( static_ips(2) ))
   networks: (( merge || default_networks ))
   properties:
     consul:
@@ -133,6 +143,10 @@ jobs:
             check:
               script: /bin/true # TODO
               interval: 5s
+    kube:
+      node:
+        manifests_dir: /var/vcap/jobs/kube-addons/config/manifests
+        register_schedulable: false
 
 - name: kube-node
   instances: 2
@@ -148,7 +162,7 @@ jobs:
   resource_pool: kube-node
   default_networks:
   - name: kubernetes
-    static_ips: (( static_ips(0, 1, 2) ))
+    static_ips: (( static_ips(0, 1) ))
   networks: (( merge || default_networks ))
   update:
     serial: true

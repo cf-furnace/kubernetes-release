@@ -1,0 +1,20 @@
+---
+name: kube-addons
+
+templates:
+  addon-manager.yml.erb: config/manifests/addon-manager.yaml
+  dns-controller.yml.erb: config/addons/dns-controller.yaml
+  dns-service.yml.erb: config/addons/dns-service.yaml
+
+properties:
+  kube.cluster_dns_address:
+    description: The cluster dns server address to inject into containers
+    default: 10.254.10.254
+
+  kube.cluster_dns_domain:
+    description: Domain to use for cluster local DNS lookups
+    default: cluster.local
+
+  kube.master_url:
+    description: Load balanced URL that represents the API servers
+    example: api.kube.bosh-lite.com

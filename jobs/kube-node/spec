@@ -17,3 +17,11 @@ properties:
   kube.cluster_dns_domain:
     description: Domain to use for cluster local DNS lookups
     default: cluster.local
+
+  kube.node.manifests_dir:
+    description: Directory containing manifest to run at startup
+    default: /var/vcap/jobs/kube-node/config/manifests
+
+  kube.node.register_schedulable:
+    description: Indicate whether or not this kubelet is a schedulable node
+    default: true

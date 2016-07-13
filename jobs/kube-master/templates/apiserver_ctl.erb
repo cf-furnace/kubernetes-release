@@ -23,7 +23,7 @@ case $1 in
         --insecure-bind-address=0.0.0.0 \
         --insecure-port=8080 \
         --secure-port=0 \
-        --etcd-servers='<%= p("kubernetes.etcd.machines").map{ |addr| "http://#{addr}:4001" }.join(",") %>' \
+        --etcd-servers='<%= p("kube.etcd.machines").map{ |addr| "http://#{addr}:4001" }.join(",") %>' \
         --service-cluster-ip-range=10.254.0.0/16 \
         --logtostderr=true \
         2> >(tee -a $LOG_DIR/apiserver.stderr.log | logger -p user.info -t vcap.apiserver) \

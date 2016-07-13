@@ -30,10 +30,14 @@ jobs:
     serial: true
 - default_networks:
   - name: kubernetes
+    static_ips:
+    - 10.244.24.4
   instances: 1
   name: kube-master
   networks:
   - name: kubernetes
+    static_ips:
+    - 10.244.24.4
   properties:
     consul:
       agent:
@@ -43,11 +47,23 @@ jobs:
               interval: 5s
               script: /bin/true
             name: kube-apiserver
+    kube:
+      node:
+        manifests_dir: /var/vcap/jobs/kube-addons/config/manifests
+        register_schedulable: false
   resource_pool: kube-master
   templates:
   - name: consul_agent
     release: consul
   - name: kube-master
+    release: kubernetes
+  - name: flannel
+    release: kubernetes
+  - name: docker
+    release: kubernetes
+  - name: kube-node
+    release: kubernetes
+  - name: kube-addons
     release: kubernetes
 - default_networks:
   - name: kubernetes
@@ -254,10 +270,11 @@ properties:
           Type: vxlan
           VNI: 14000
         Network: 10.244.32.0/19
-  kubernetes:
+  kube:
     etcd:
       machines:
       - kube-etcd.service.cf.internal
+    master_url: http://10.244.24.4:8080
 releases:
 - name: etcd
   version: latest
