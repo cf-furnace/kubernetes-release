@@ -132,7 +132,7 @@ jobs:
   resource_pool: kube-master
   default_networks:
   - name: kubernetes
-    static_ips: (( static_ips(2) ))
+    static_ips: (( static_ips(0) ))
   networks: (( merge || default_networks ))
   properties:
     consul:
@@ -162,7 +162,7 @@ jobs:
   resource_pool: kube-node
   default_networks:
   - name: kubernetes
-    static_ips: (( static_ips(0, 1) ))
+    static_ips: (( static_ips(1, 2) ))
   networks: (( merge || default_networks ))
   update:
     serial: true

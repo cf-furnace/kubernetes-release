@@ -31,13 +31,13 @@ jobs:
 - default_networks:
   - name: kubernetes
     static_ips:
-    - 10.244.24.4
+    - 10.244.24.2
   instances: 1
   name: kube-master
   networks:
   - name: kubernetes
     static_ips:
-    - 10.244.24.4
+    - 10.244.24.2
   properties:
     consul:
       agent:
@@ -68,15 +68,15 @@ jobs:
 - default_networks:
   - name: kubernetes
     static_ips:
-    - 10.244.24.2
     - 10.244.24.3
+    - 10.244.24.4
   instances: 2
   name: kube-node
   networks:
   - name: kubernetes
     static_ips:
-    - 10.244.24.2
     - 10.244.24.3
+    - 10.244.24.4
   resource_pool: kube-node
   templates:
   - name: consul_agent
@@ -274,7 +274,7 @@ properties:
     etcd:
       machines:
       - kube-etcd.service.cf.internal
-    master_url: http://10.244.24.4:8080
+    master_url: http://10.244.24.2:8080
 releases:
 - name: etcd
   version: latest
