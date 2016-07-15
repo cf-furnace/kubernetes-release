@@ -4,7 +4,9 @@ set -e
 
 RUN_DIR=/var/vcap/sys/run/docker
 LOG_DIR=/var/vcap/sys/log/docker
-PIDFILE=${RUN_DIR}/docker.pid
+
+# work around kubernetes bug in container manager
+PIDFILE=/var/run/docker.pid
 
 source /var/vcap/packages/common/utils.sh
 
@@ -65,9 +67,10 @@ case $1 in
     # Start Docker daemon
     exec chpst -u ${DOCKER_USER}:${DOCKER_GROUP} docker daemon \
       ${FLANNEL_OPTS:-} \
-      --graph ${DOCKER_GRAPH_DIR} \
-      --group ${DOCKER_GROUP} \
-      --host unix://${RUN_DIR}/docker.sock \
+      --graph=${DOCKER_GRAPH_DIR} \
+      --group=${DOCKER_GROUP} \
+      --exec-root=/var/vcap/data/docker \
+      --host=unix://${RUN_DIR}/docker.sock \
       --pidfile ${PIDFILE} \
       1> >(tee -a ${LOG_DIR}/docker.stdout.log | logger -p user.info -t vcap.docker) \
       2> >(tee -a ${LOG_DIR}/docker.stderr.log | logger -p user.error -t vcap.docker)
