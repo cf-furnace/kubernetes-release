@@ -93,6 +93,9 @@ spec:
         - containerPort: 53
           name: dns-tcp
           protocol: TCP
+        env:
+        - name: SKYDNS_NAMESERVERS
+          value: <%= p('kube.consul_dns_proxy_address') %>:9053
       - name: healthz
         image: gcr.io/google_containers/exechealthz:1.0
         resources:

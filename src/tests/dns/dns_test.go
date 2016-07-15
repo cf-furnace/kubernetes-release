@@ -105,5 +105,28 @@ var _ = Describe("kube-dns", func() {
 			err = executor.Stream(remotecommandserver.SupportedStreamingProtocols, nil, GinkgoWriter, GinkgoWriter, false)
 			Expect(err).NotTo(HaveOccurred())
 		})
+
+		It("resolves consul service urls", func() {
+			req := client.GetRESTClient().Post().
+				Resource("pods").
+				Name(busyboxPod.Name).
+				Namespace(busyboxPod.Namespace).
+				SubResource("exec").
+				Param("container", "busybox")
+			req.VersionedParams(&v1.PodExecOptions{
+				Container: "busybox",
+				Command:   []string{"nslookup", "kube-apiserver.service.cf.internal"},
+				Stdin:     false,
+				Stdout:    true,
+				Stderr:    true,
+				TTY:       false,
+			}, api.ParameterCodec)
+
+			executor, err := remotecommand.NewExecutor(clientConfig, http.MethodPost, req.URL())
+			Expect(err).NotTo(HaveOccurred())
+
+			err = executor.Stream(remotecommandserver.SupportedStreamingProtocols, nil, GinkgoWriter, GinkgoWriter, false)
+			Expect(err).NotTo(HaveOccurred())
+		})
 	})
 })

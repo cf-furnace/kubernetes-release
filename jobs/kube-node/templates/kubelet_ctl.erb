@@ -17,6 +17,8 @@ case $1 in
     mkdir -p $LOG_DIR
     chown -R vcap:vcap $LOG_DIR
 
+    mkdir -p <%= p("kube.node.manifests_dir") %>
+
     echo $$ > $PIDFILE
 
     mount -o remount,rw /sys

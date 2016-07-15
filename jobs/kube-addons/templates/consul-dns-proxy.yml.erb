@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: consul-dns-proxy
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: "true"
+    furnace-app: consul-dns-proxy
+spec:
+  template:
+    metadata:
+      name: consul-dns-proxy
+      namespace: kube-system
+      labels:
+        furnace-app: consul-dns-proxy
+    spec:
+      containers:
+      - name: dnsmasq
+        image: andyshinn/dnsmasq:2.75
+        resources:
+          limits:
+            cpu: 100m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+        args:
+        - --log-facility=-
+        - --no-hosts
+        - --no-negcache
+        - --no-resolv
+        - --port=9053
+        - --server=127.0.0.1
+        - --user=root
+      hostNetwork: true

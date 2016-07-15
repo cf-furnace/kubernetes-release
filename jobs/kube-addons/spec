@@ -5,6 +5,8 @@ templates:
   addon-manager.yml.erb: config/manifests/addon-manager.yaml
   dns-controller.yml.erb: config/addons/dns-controller.yaml
   dns-service.yml.erb: config/addons/dns-service.yaml
+  consul-dns-proxy.yml.erb: config/addons/consul-dns-proxy.yaml
+  consul-dns-proxy-service.yml.erb: config/addons/consul-dns-service.yaml
 
 properties:
   kube.cluster_dns_address:
@@ -14,6 +16,10 @@ properties:
   kube.cluster_dns_domain:
     description: Domain to use for cluster local DNS lookups
     default: cluster.local
+
+  kube.consul_dns_proxy_address:
+    description: The cluster address to use for the consul dns proxy pods
+    default: 10.254.10.253
 
   kube.master_url:
     description: Load balanced URL that represents the API servers
