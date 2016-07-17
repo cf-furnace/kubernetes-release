@@ -1,118 +1,126 @@
 resources:
-- name: boshlite-stemcell
+# bosh.io public stemcell
+- name: softlayer-stemcell
   type: bosh-io-stemcell
   source:
-    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-- name: cf-release
-  type: git
-  source:
-    branch: master
-    ignore_paths:
-    - dev_releases
-    - git_hooks
-    - releases
-    - .final_builds
-    uri: https://github.com/cloudfoundry/cf-release.git
+    name: bosh-softlayer-esxi-ubuntu-trusty-go_agent
+
+# bosh.io public releases
 - name: cf-release-tarball
   type: bosh-io-release
   source:
     repository: cloudfoundry/cf-release
-- name: rootfs-release-tarball
-  type: bosh-io-release
-  source:
-    repository: cloudfoundry/cflinuxfs2-rootfs-release
 - name: consul-release-tarball
   type: bosh-io-release
   source:
     repository: cloudfoundry-incubator/consul-release
+- name: diego-release-tarball
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/diego-release
 - name: etcd-release-tarball
   type: bosh-io-release
   source:
     repository: cloudfoundry-incubator/etcd-release
-- name: diego-release
-  type: git
-  source:
-    branch: master
-    ignore_paths:
-    - dev_releases
-    - git_hooks
-    - releases
-    - .final_builds
-    uri: https://github.com/cloudfoundry-incubator/diego-release.git
-- name: diego-release-tarball
-  type: bosh-io-release
-  source:
-    repository: cloudfoundry-incubator/diego-release
 - name: garden-linux-release-tarball
   type: bosh-io-release
   source:
     repository: cloudfoundry-incubator/garden-linux-release
+- name: rootfs-release-tarball
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/cflinuxfs2-rootfs-release
+
+# releases to clone
+- name: cf-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-release.git
+- name: deployments-furnace
+  type: git
+  source:
+    branch: master
+    uri: git@github.ibm.com:sykesmat/deployments-furnace.git
+    private_key: {{deployments_private_key}}
+- name: diego-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/diego-release.git
+- name: furnace-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cf-furnace/furnace-release.git
 - name: kubernetes-release
   type: git
   source:
     branch: master
-    ignore_paths:
-    - dev_releases
-    - git_hooks
-    - releases
-    - .final_builds
-    uri: https://github.com/sykesm/kubernetes-release.git
-- name: boshlite-cf
+    uri: https://github.com/cf-furnace/kubernetes-release.git
+
+# furnace deployments
+- name: cf-furnace
   type: bosh-deployment
   source:
-    target: {{bosh-lite-target}}
-    username: {{bosh-lite-user}}
-    password: {{bosh-lite-password}}
-    deployment: cf-warden
-- name: boshlite-diego
+    target: {{bosh_target}}
+    username: {{bosh_user}}
+    password: {{bosh_password}}
+    deployment: cf-furnace
+- name: cf-furnace-diego
   type: bosh-deployment
   source:
-    target: {{bosh-lite-target}}
-    username: {{bosh-lite-user}}
-    password: {{bosh-lite-password}}
-    deployment: cf-warden-diego
-- name: boshlite-kubernetes
+    target: {{bosh_target}}
+    username: {{bosh_user}}
+    password: {{bosh_password}}
+    deployment: cf-furnace-diego
+- name: cf-furnace-kube
   type: bosh-deployment
   source:
-    target: {{bosh-lite-target}}
-    username: {{bosh-lite-user}}
-    password: {{bosh-lite-password}}
-    deployment: kubernetes
+    target: {{bosh_target}}
+    username: {{bosh_user}}
+    password: {{bosh_password}}
+    deployment: cf-furnace-kube
 
 jobs:
-- name: boshlite-deploy
+- name: furnace-deploy
   public: true
-  serial_groups: [boshlite]
+  serial_groups: [furnace]
   plan:
   - aggregate:
-    - get: boshlite-stemcell
+    - get: softlayer-stemcell
       trigger: true
-    - get: cf-release
-      trigger: true
-      params:
-        depth: 10
-        submodules: none
     - get: cf-release-tarball
       trigger: true
     - get: consul-release-tarball
       trigger: true
-    - get: diego-release
-      trigger: true
-      params:
-        depth: 10
-        submodules: none
     - get: diego-release-tarball
       trigger: true
     - get: etcd-release-tarball
       trigger: true
     - get: garden-linux-release-tarball
       trigger: true
+    - get: rootfs-release-tarball
+      trigger: true
+    - get: cf-release
+      trigger: true
+      params:
+        depth: 10
+        submodules: none
+    - get: deployments-furnace
+      trigger: true
+      params:
+        depth: 10
+        submodules: none
+    - get: diego-release
+      trigger: true
+      params:
+        depth: 10
+        submodules: none
     - get: kubernetes-release
       params:
         depth: 10
         submodules: none
-      trigger: true
-    - get: rootfs-release-tarball
       trigger: true
   - task: create-kubernetes-release
     config:
@@ -141,6 +149,7 @@ jobs:
       inputs:
       - name: cf-release
       - name: diego-release
+      - name: deployments-furnace
       - name: kubernetes-release
       outputs:
       - name: manifests
@@ -150,41 +159,35 @@ jobs:
         - -c
         - |
           set -e
-          bosh -n target {{bosh-lite-target}} lite
-          bosh login {{bosh-lite-user}} {{bosh-lite-password}}
-
-          export CF_MANIFESTS_DIR=$PWD/cf-release/bosh-lite/deployments/cf.yml
-          ( cd cf-release && ./scripts/generate-bosh-lite-dev-manifest )
-          ( cd diego-release && ./scripts/generate-bosh-lite-manifests )
-
-          cp cf-release/bosh-lite/deployments/cf.yml manifests
-          cp diego-release/bosh-lite/deployments/diego.yml manifests
-          cat kubernetes-release/manifests/kubernetes-manifest.yml | grep -v director_uuid > manifests/kubernetes.yml
-  - put: boshlite-cf
+          bosh -n target {{bosh_target}} {{bosh_alias}}
+          bosh login {{bosh_user}} {{bosh_password}}
+          workspace=$PWD deployments-furnace/furnace/generate-manifests.sh
+          cp deployments-furnace/furnace/manifests/*.yml manifests/
+  - put: cf-furnace
     params:
       cleanup: true
       manifest: manifests/cf.yml
       stemcells:
-      - boshlite-stemcell/*.tgz
+      - softlayer-stemcell/*.tgz
       releases:
       - cf-release-tarball/*.tgz
-  - put: boshlite-diego
+  - put: cf-furnace-diego
     params:
       cleanup: true
       manifest: manifests/diego.yml
       stemcells:
-      - boshlite-stemcell/*.tgz
+      - softlayer-stemcell/*.tgz
       releases:
       - diego-release-tarball/*.tgz
       - etcd-release-tarball/*.tgz
       - garden-linux-release-tarball/*.tgz
       - rootfs-release-tarball/*.tgz
-  - put: boshlite-kubernetes
+  - put: cf-furnace-kube
     params:
       cleanup: true
       manifest: manifests/kubernetes.yml
       stemcells:
-      - boshlite-stemcell/*.tgz
+      - softlayer-stemcell/*.tgz
       releases:
       - consul-release-tarball/*.tgz
       - etcd-release-tarball/*.tgz
