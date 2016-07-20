@@ -3,6 +3,7 @@
 RUN_DIR=/var/vcap/sys/run/kubelet
 LOG_DIR=/var/vcap/sys/log/kubelet
 PIDFILE=$RUN_DIR/kubelet.pid
+ROOT_DIR=/var/vcap/data/kubelet
 
 source /var/vcap/packages/common/utils.sh
 
@@ -16,6 +17,9 @@ case $1 in
 
     mkdir -p $LOG_DIR
     chown -R vcap:vcap $LOG_DIR
+
+    mkdir -p $ROOT_DIR
+    chown vcap:vcap $ROOT_DIR
 
     mkdir -p <%= p("kube.node.manifests_dir") %>
 
@@ -35,7 +39,7 @@ case $1 in
         --hostname-override=<%= "#{name.gsub('_', '-')}-#{spec.index}.node.cf.internal" %> \
         --logtostderr=true \
         --register-schedulable=<%= p("kube.node.register_schedulable") %> \
-        --root-dir=/var/vcap/sys/run/kubelet \
+        --root-dir=$ROOT_DIR \
         2> >(tee -a $LOG_DIR/kubelet.stderr.log | logger -p user.info -t vcap.kubelet) \
         1> >(tee -a $LOG_DIR/kubelet.stdout.log | logger -p user.error -t vcap.kubelet)
     ;;
