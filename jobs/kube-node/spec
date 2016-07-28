@@ -8,13 +8,14 @@ packages:
 templates:
   kube-proxy_ctl.erb: bin/kube-proxy_ctl
   kubelet_ctl.erb: bin/kubelet_ctl
+  node-config.yml.erb: config/node-config.yaml
 
 properties:
-  kube.cluster_dns_address:
+  kube.cluster.dns_address:
     description: The cluster dns server address to inject into containers
     default: 10.254.10.254
 
-  kube.cluster_dns_domain:
+  kube.cluster.dns_domain:
     description: Domain to use for cluster local DNS lookups
     default: cluster.local
 

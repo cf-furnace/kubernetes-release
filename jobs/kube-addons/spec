@@ -9,11 +9,11 @@ templates:
   consul-dns-proxy-service.yml.erb: config/addons/consul-dns-service.yaml
 
 properties:
-  kube.cluster_dns_address:
+  kube.cluster.dns_address:
     description: The cluster dns server address to inject into containers
     default: 10.254.10.254
 
-  kube.cluster_dns_domain:
+  kube.cluster.dns_domain:
     description: Domain to use for cluster local DNS lookups
     default: cluster.local
 
