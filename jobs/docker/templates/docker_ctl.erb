@@ -28,7 +28,7 @@ case $1 in
     mkdir -p $LOG_DIR
     chown -R vcap:vcap $LOG_DIR
 
-    # Create Docker user & group
+    # Create Docker user and group
     create_group ${DOCKER_GROUP}
     create_user ${DOCKER_USER} ${DOCKER_GROUP}
 

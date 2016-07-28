@@ -5,7 +5,7 @@ check process kubelet
   depends on docker
   group vcap
 
-check process proxy
+check process kube-proxy
   with pidfile /var/vcap/sys/run/kube-proxy/kube-proxy.pid
   start program "/var/vcap/jobs/kube-node/bin/kube-proxy_ctl start"
   stop program "/var/vcap/jobs/kube-node/bin/kube-proxy_ctl stop"
