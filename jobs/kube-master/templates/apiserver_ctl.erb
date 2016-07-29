@@ -20,12 +20,20 @@ case $1 in
     echo $$ > $PIDFILE
 
     exec chpst -u vcap:vcap /var/vcap/packages/kubernetes/bin/hyperkube apiserver \
-        --insecure-bind-address=0.0.0.0 \
-        --insecure-port=8080 \
-        --secure-port=0 \
+        --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota \
+        --basic-auth-file=/var/vcap/jobs/kube-master/config/passwords.csv \
+        --bind-address=0.0.0.0 \
+        --client-ca-file=/var/vcap/jobs/kube-master/config/certs/ca-cert.pem \
         --etcd-servers='<%= p("kube.etcd.machines").map{ |addr| "http://#{addr}:4001" }.join(",") %>' \
-        --service-cluster-ip-range=10.254.0.0/16 \
+        --insecure-bind-address=127.0.0.1 \
+        --insecure-port=8080 \
         --logtostderr=true \
+        --runtime-config=extensions/v1beta1=true \
+        --secure-port=6443 \
+        --service-account-key-file=/var/vcap/jobs/kube-master/config/certs/apiserver-cert.pem \
+        --service-cluster-ip-range=<%= p('kube.cluster.service_ip_range') %> \
+        --tls-cert-file=/var/vcap/jobs/kube-master/config/certs/apiserver-cert.pem \
+        --tls-private-key-file=/var/vcap/jobs/kube-master/config/certs/apiserver-key.pem \
         2> >(tee -a $LOG_DIR/apiserver.stderr.log | logger -p user.info -t vcap.apiserver) \
         1> >(tee -a $LOG_DIR/apiserver.stdout.log | logger -p user.error -t vcap.apiserver)
     ;;

@@ -29,14 +29,16 @@ case $1 in
 
     # add --config to point to manifests
     exec /var/vcap/packages/kubernetes/bin/hyperkube kubelet \
-        --api-servers=http://kube-apiserver.service.cf.internal:8080 \
+        --api-servers=https://kube-apiserver.service.cf.internal:6443 \
         --cert-dir=/var/vcap/sys/run/kubelet/certs \
         --cluster-dns=<%= p("kube.cluster.dns_address") %> \
         --cluster-domain=<%= p("kube.cluster.dns_domain") %> \
         --config=<%= p("kube.node.manifests_dir") %> \
-        --docker=unix:///var/vcap/sys/run/docker/docker.sock \
         --docker-endpoint=unix:///var/vcap/sys/run/docker/docker.sock \
+        --docker=unix:///var/vcap/sys/run/docker/docker.sock \
+        --hairpin-mode=none \
         --hostname-override=<%= "#{name.gsub('_', '-')}-#{spec.index}.node.cf.internal" %> \
+        --kubeconfig=/var/vcap/jobs/kube-node/config/kubeconfig.yaml \
         --logtostderr=true \
         --register-schedulable=<%= p("kube.node.register_schedulable") %> \
         --root-dir=$ROOT_DIR \

@@ -6,5 +6,5 @@ release_dir=$(cd "$(dirname "$0")/.." && pwd)
 
 spiff merge \
   ${release_dir}/manifest-generation/kubernetes.yml \
-  ${release_dir}/manifest-generation/bosh-lite/infrastructure.yml \
+  ${release_dir}/manifest-generation/bosh-lite/*.yml \
   > ${release_dir}/manifests/kubernetes-bosh-lite.yml

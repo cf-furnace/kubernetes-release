@@ -9,7 +9,40 @@ templates:
   apiserver_ctl.erb: bin/apiserver_ctl
   controller-manager_ctl.erb: bin/controller-manager_ctl
   scheduler_ctl.erb: bin/scheduler_ctl
+  ca-cert.pem.erb: config/certs/ca-cert.pem
+  apiserver-cert.pem.erb: config/certs/apiserver-cert.pem
+  apiserver-key.pem.erb: config/certs/apiserver-key.pem
+  passwords.csv.erb: config/passwords.csv
 
 properties:
+  kube.apiserver.cert:
+    description: The TLS certificate for the API server
+
+  kube.apiserver.key:
+    description: The private key associated with the API server's certificate
+
+  kube.apiserver.basic_auth_users:
+    description: |
+      The set of users and passwords that can be used for authentication. The 'name' key is the name used
+      during authentication and the 'id' indicates the user ID that is used for authorization.
+    default: []
+    example: |
+      basic_auth_users:
+      - name: admin
+        password: password
+        id: admin
+
+  kube.cluster.ca_cert:
+    description: The certificate authority bundle used for kubernetes TLS and mutual authentication
+
+  kube.cluster.service_ip_range:
+    description: |
+      A CIDR notation IP range from which to assign service cluster IPs. This must not overlap
+      with any IP ranges assigned to nodes for pods. The first IP in this range will become the
+      kubernetes API server's Cluster IP.
+
+      This range cannot be easily changed as service IPs are supposed to be static.
+    default: 10.254.0.0/16
+
   kube.etcd.machines:
     description: List of etcd cluster members

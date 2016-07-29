@@ -20,10 +20,12 @@ case $1 in
     echo $$ > $PIDFILE
 
     exec /var/vcap/packages/kubernetes/bin/hyperkube proxy \
-        --master=http://kube-apiserver.service.cf.internal:8080 \
-        --conntrack-max=0 \
         --conntrack-max-per-core=0 \
+        --conntrack-max=0 \
         --logtostderr=true \
+        --kubeconfig=/var/vcap/jobs/kube-node/config/kubeconfig.yaml \
+        --master=https://kube-apiserver.service.cf.internal:6443 \
+        --proxy-mode=iptables \
         2> >(tee -a $LOG_DIR/kube-proxy.stderr.log | logger -p user.info -t vcap.kube-proxy) \
         1> >(tee -a $LOG_DIR/kube-proxy.stdout.log | logger -p user.error -t vcap.kube-proxy)
     ;;

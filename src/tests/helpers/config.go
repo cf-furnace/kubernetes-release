@@ -9,10 +9,13 @@ import (
 )
 
 type Config struct {
-	APIServer string `json:"api_server"`
-	CertFile  string `json:"cert_file"`
-	KeyFile   string `json:"key_file"`
-	CAFile    string `json:"ca_file"`
+	APIServer                 string `json:"api_server"`
+	Username                  string `json:"username"`
+	Password                  string `json:"password"`
+	SkipCertificateValidation bool   `json:"skip_certificate_validation"`
+	CertFile                  string `json:"cert_file"`
+	KeyFile                   string `json:"key_file"`
+	CAFile                    string `json:"ca_file"`
 }
 
 func Load() (*Config, error) {
@@ -37,7 +40,10 @@ func Load() (*Config, error) {
 
 func (c *Config) ClientConfig() *restclient.Config {
 	return &restclient.Config{
-		Host: c.APIServer,
+		Host:     c.APIServer,
+		Username: c.Username,
+		Password: c.Password,
+		Insecure: c.SkipCertificateValidation,
 		TLSClientConfig: restclient.TLSClientConfig{
 			CertFile: c.CertFile,
 			KeyFile:  c.KeyFile,

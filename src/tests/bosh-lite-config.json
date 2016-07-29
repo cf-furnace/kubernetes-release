@@ -1,1 +1,6 @@
-{ "api_server": "http://10.244.24.2:8080" }
+{
+    "api_server": "https://10.244.24.2:6443",
+    "username": "admin",
+    "password": "admin",
+    "skip_certificate_validation": true
+}

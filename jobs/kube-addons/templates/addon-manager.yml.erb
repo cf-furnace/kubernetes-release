@@ -3,12 +3,12 @@ kind: Pod
 metadata:
   name: kube-addon-manager
   namespace: kube-system
-  version: v1
+  version: v5
 spec:
   hostNetwork: true
   containers:
   - name: kube-addon-manager
-    image: gcr.io/google-containers/kube-addon-manager-amd64:v2
+    image: gcr.io/google-containers/kube-addon-manager-amd64:v5
     resources:
       requests:
         cpu: 5m

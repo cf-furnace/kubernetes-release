@@ -86,9 +86,10 @@ properties:
           VNI: 14000
 
   kube:
+    <<: (( merge ))
+    master_url: (( merge || "http://" jobs.kube-master.networks.kubernetes.static_ips.[0] ":8080" ))
     etcd:
       machines: (( properties.etcd.machines ))
-    master_url: (( "http://" jobs.kube-master.networks.kubernetes.static_ips.[0] ":8080" ))
 
 jobs:
 - name: kube-etcd

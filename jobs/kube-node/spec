@@ -8,9 +8,19 @@ packages:
 templates:
   kube-proxy_ctl.erb: bin/kube-proxy_ctl
   kubelet_ctl.erb: bin/kubelet_ctl
-  node-config.yml.erb: config/node-config.yaml
+  kubeconfig.yml.erb: config/kubeconfig.yaml
+  ca-cert.pem.erb: config/certs/ca-cert.pem
+  kubelet-key.pem.erb: config/certs/kubelet-key.pem
+  kubelet-cert.pem.erb: config/certs/kubelet-cert.pem
 
 properties:
+  kube.cluster.ca_cert:
+    description: The certificate authority bundle used for kubernetes TLS and mutual authentication
+
+  kube.cluster.name:
+    description: The cluster name
+    default: furnace
+
   kube.cluster.dns_address:
     description: The cluster dns server address to inject into containers
     default: 10.254.10.254
@@ -26,3 +36,11 @@ properties:
   kube.node.register_schedulable:
     description: Indicate whether or not this kubelet is a schedulable node
     default: true
+
+  kube.node.client_cert:
+    description: |
+      Client certificate to use for authentication with the API server.
+      The subject CN of this certificate must be 'kubelet'.
+
+  kube.node.client_key:
+    description: Private key to use for authentication with the API server.

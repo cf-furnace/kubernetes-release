@@ -20,8 +20,8 @@ case $1 in
     echo $$ > $PIDFILE
 
     exec chpst -u vcap:vcap /var/vcap/packages/kubernetes/bin/hyperkube scheduler \
-        --master=127.0.0.1:8080 \
         --logtostderr=true \
+        --master=127.0.0.1:8080 \
         2> >(tee -a $LOG_DIR/scheduler.stderr.log | logger -p user.info -t vcap.scheduler) \
         1> >(tee -a $LOG_DIR/scheduler.stdout.log | logger -p user.error -t vcap.scheduler)
     ;;

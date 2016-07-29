@@ -33,7 +33,7 @@ var _ = Describe("kube-dns", func() {
 	})
 
 	It("is associated with a replication controller", func() {
-		rc, err := client.ReplicationControllers("kube-system").Get("kube-dns-v11")
+		rc, err := client.ReplicationControllers("kube-system").Get("kube-dns-v19")
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(rc.Spec.Replicas).NotTo(BeNil())
@@ -83,7 +83,7 @@ var _ = Describe("kube-dns", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		It("resolves kubernetes.default", func() {
+		It("resolves kubernetes.default.svc.cluster.local", func() {
 			req := client.GetRESTClient().Post().
 				Resource("pods").
 				Name(busyboxPod.Name).
@@ -92,7 +92,7 @@ var _ = Describe("kube-dns", func() {
 				Param("container", "busybox")
 			req.VersionedParams(&v1.PodExecOptions{
 				Container: "busybox",
-				Command:   []string{"nslookup", "kubernetes.default"},
+				Command:   []string{"nslookup", "kubernetes.default.svc.cluster.local"},
 				Stdin:     false,
 				Stdout:    true,
 				Stderr:    true,
