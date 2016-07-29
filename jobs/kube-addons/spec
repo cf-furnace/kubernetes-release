@@ -3,10 +3,12 @@ name: kube-addons
 
 templates:
   addon-manager.yml.erb: config/manifests/addon-manager.yaml
-  dns-controller.yml.erb: config/addons/dns-controller.yaml
-  dns-service.yml.erb: config/addons/dns-service.yaml
   consul-dns-proxy.yml.erb: config/addons/consul-dns-proxy.yaml
   consul-dns-proxy-service.yml.erb: config/addons/consul-dns-service.yaml
+  dns-controller.yml.erb: config/addons/dns-controller.yaml
+  dns-service.yml.erb: config/addons/dns-service.yaml
+  heapster-controller.yml.erb: config/addons/heapster-controller.yaml
+  heapster-service.yml.erb: config/addons/heapster-service.yaml
 
 properties:
   kube.cluster.dns_address:
@@ -16,6 +18,10 @@ properties:
   kube.cluster.dns_domain:
     description: Domain to use for cluster local DNS lookups
     default: cluster.local
+
+  kube.cluster.node_count:
+    description: Approximate number of nodes in the cluster
+    default: 2
 
   kube.consul_dns_proxy_address:
     description: The cluster address to use for the consul dns proxy pods
