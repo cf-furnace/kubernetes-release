@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-  name: consul-dns-proxy
+  name: consul-dns-proxy-<%= (Time.now.to_f * 1000).to_i %>
   namespace: kube-system
   labels:
     kubernetes.io/cluster-service: "true"

@@ -33,9 +33,16 @@ var _ = Describe("kube-dns", func() {
 	})
 
 	It("is associated with a replication controller", func() {
-		rc, err := client.ReplicationControllers("kube-system").Get("kube-dns-v19")
+		requirement, err := labels.NewRequirement("k8s-app", labels.EqualsOperator, sets.NewString("kube-dns"))
 		Expect(err).NotTo(HaveOccurred())
 
+		dnsControllers, err := client.ReplicationControllers("kube-system").List(api.ListOptions{
+			LabelSelector: labels.NewSelector().Add(*requirement),
+		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(dnsControllers.Items).To(HaveLen(1))
+
+		rc := dnsControllers.Items[0]
 		Expect(rc.Spec.Replicas).NotTo(BeNil())
 		Expect(*rc.Spec.Replicas).NotTo(Equal(0))
 		Expect(*rc.Spec.Replicas).To(Equal(rc.Status.Replicas))

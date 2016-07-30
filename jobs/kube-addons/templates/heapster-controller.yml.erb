@@ -17,7 +17,7 @@ metrics_cpu    = base_metrics_cpu    + num_nodes * metrics_cpu_per_node    # m
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: heapster-v1.1.0
+  name: heapster-v1.1.0-<%= (Time.now.to_f * 1000).to_i %>
   namespace: kube-system
   labels:
     k8s-app: heapster

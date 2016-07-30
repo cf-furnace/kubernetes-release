@@ -3,8 +3,10 @@ name: kube-addons
 
 templates:
   addon-manager.yml.erb: config/manifests/addon-manager.yaml
-  consul-dns-proxy.yml.erb: config/addons/consul-dns-proxy.yaml
+  consul-dns-proxy-controller.yml.erb: config/addons/consul-dns-proxy-controller.yaml
   consul-dns-proxy-service.yml.erb: config/addons/consul-dns-service.yaml
+  dashboard-controller.yml.erb: config/addons/dashboard-controller.yaml
+  dashboard-service.yml.erb: config/addons/dashboard-service.yaml
   dns-controller.yml.erb: config/addons/dns-controller.yaml
   dns-service.yml.erb: config/addons/dns-service.yaml
   heapster-controller.yml.erb: config/addons/heapster-controller.yaml
