@@ -57,6 +57,7 @@ properties:
   <<: (( merge ))
 
   consul:
+    <<: (( merge ))
     agent:
       domain: cf.internal
       log_level: ~
@@ -87,6 +88,9 @@ properties:
 
   kube:
     <<: (( merge ))
+    cluster:
+      name: (( merge || meta.environment ))
+      <<: (( merge ))
     master_url: (( merge || "http://" jobs.kube-master.networks.kubernetes.static_ips.[0] ":8080" ))
     etcd:
       machines: (( properties.etcd.machines ))

@@ -1,0 +1,34 @@
+---
+name: kubernetes
+
+director_uuid: <%= `bosh target lite > /dev/null 2>&1 && bosh status --uuid` %>
+
+meta:
+  consul_servers:
+  - 10.244.0.54
+  environment: cf-furnace
+  stemcell:
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    version: latest
+
+networks:
+- name: kubernetes
+  subnets:
+  - range: 10.244.24.0/24
+    reserved: [10.244.24.1]
+    static:
+      - 10.244.24.2-10.244.24.10
+    cloud_properties: {}
+
+compilation:
+  cloud_properties: {}
+
+resource_pools:
+- name: kube-etcd
+  cloud_properties: {}
+
+- name: kube-master
+  cloud_properties: {}
+
+- name: kube-node
+  cloud_properties: {}
