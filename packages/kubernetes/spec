@@ -4,4 +4,4 @@ name: kubernetes
 dependencies:
 
 files:
-- kubernetes/kubernetes-server-1.3.3.tgz
+- kubernetes/kubernetes-server-*.tgz
