@@ -23,7 +23,7 @@ jobs:
   resource_pool: kube-etcd
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: etcd
     release: etcd
   update:
@@ -54,7 +54,7 @@ jobs:
   resource_pool: kube-master
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: kube-master
     release: kubernetes
   - name: flannel
@@ -77,16 +77,31 @@ jobs:
     static_ips:
     - 10.244.24.3
     - 10.244.24.4
+  properties:
+    loggregator:
+      etcd:
+        machines:
+        - cf-etcd.service.cf.internal
+        require_ssl: false
+    metron_agent:
+      deployment: kubernetes
+      zone: z1
+    metron_endpoint:
+      shared_secret: loggregator-secret
   resource_pool: kube-node
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: flannel
     release: kubernetes
   - name: docker
     release: kubernetes
   - name: kube-node
     release: kubernetes
+  - name: logging-agent
+    release: furnace
+  - name: metron_agent
+    release: cf
   update:
     serial: true
 meta:
@@ -429,9 +444,11 @@ properties:
 releases:
 - name: etcd
   version: latest
-- name: consul
-  version: latest
 - name: kubernetes
+  version: latest
+- name: furnace
+  version: latest
+- name: cf
   version: latest
 resource_pools:
 - cloud_properties: {}

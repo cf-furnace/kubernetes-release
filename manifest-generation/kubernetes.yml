@@ -6,9 +6,11 @@ director_uuid: (( merge ))
 releases:
 - name: etcd
   version: latest
-- name: consul
-  version: latest
 - name: kubernetes
+  version: latest
+- name: furnace
+  version: latest
+- name: cf
   version: latest
 
 networks: (( merge ))
@@ -100,7 +102,7 @@ jobs:
   instances: 1
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: etcd
     release: etcd
   resource_pool: kube-etcd
@@ -123,7 +125,7 @@ jobs:
   instances: 1
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: kube-master
     release: kubernetes
   - name: flannel
@@ -157,17 +159,34 @@ jobs:
   instances: 2
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: flannel
     release: kubernetes
   - name: docker
     release: kubernetes
   - name: kube-node
     release: kubernetes
+  - name: logging-agent
+    release: furnace
+  - name: metron_agent
+    release: cf
   resource_pool: kube-node
   default_networks:
   - name: kubernetes
     static_ips: (( static_ips(1, 2) ))
   networks: (( merge || default_networks ))
+  properties:
+    # -- Properties below are used by the metron_agent job from cf-release --
+    metron_agent:
+      deployment: (( .name ))
+      zone: z1
+    loggregator:
+      etcd:
+        require_ssl: false
+        machines:
+          - cf-etcd.service.cf.internal
+    metron_endpoint:
+      shared_secret: loggregator-secret
+
   update:
     serial: true
