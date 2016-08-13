@@ -6,9 +6,11 @@ director_uuid: (( merge ))
 releases:
 - name: etcd
   version: latest
-- name: consul
-  version: latest
 - name: kubernetes
+  version: latest
+- name: furnace
+  version: latest
+- name: cf
   version: latest
 
 networks: (( merge ))
@@ -100,7 +102,7 @@ jobs:
   instances: 1
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: etcd
     release: etcd
   resource_pool: kube-etcd
@@ -123,7 +125,7 @@ jobs:
   instances: 1
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: kube-master
     release: kubernetes
   - name: flannel
@@ -157,13 +159,15 @@ jobs:
   instances: 2
   templates:
   - name: consul_agent
-    release: consul
+    release: cf
   - name: flannel
     release: kubernetes
   - name: docker
     release: kubernetes
   - name: kube-node
     release: kubernetes
+  - name: logging-agent
+    release: furnace
   resource_pool: kube-node
   default_networks:
   - name: kubernetes

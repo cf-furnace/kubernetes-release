@@ -72,6 +72,9 @@ case $1 in
       --exec-root=/var/vcap/data/docker \
       --host=unix://${RUN_DIR}/docker.sock \
       --pidfile ${PIDFILE} \
+      --log-driver=json-file \
+      --log-opt max-size=10m \
+      --log-opt max-file=2 \
       1> >(tee -a ${LOG_DIR}/docker.stdout.log | logger -p user.info -t vcap.docker) \
       2> >(tee -a ${LOG_DIR}/docker.stderr.log | logger -p user.error -t vcap.docker)
     ;;
