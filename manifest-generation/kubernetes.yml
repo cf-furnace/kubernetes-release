@@ -168,6 +168,8 @@ jobs:
     release: kubernetes
   - name: logging-agent
     release: furnace
+  - name: controller
+    release: furnace
   - name: metron_agent
     release: cf
   resource_pool: kube-node
