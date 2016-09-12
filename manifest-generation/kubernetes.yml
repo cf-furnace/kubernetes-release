@@ -92,8 +92,8 @@ properties:
     <<: (( merge ))
     cluster:
       name: (( merge || meta.environment ))
+      master_url: (( merge || "http://" jobs.kube-master.networks.kubernetes.static_ips.[0] ":8080" ))
       <<: (( merge ))
-    master_url: (( merge || "http://" jobs.kube-master.networks.kubernetes.static_ips.[0] ":8080" ))
     etcd:
       machines: (( properties.etcd.machines ))
 

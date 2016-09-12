@@ -13,6 +13,10 @@ templates:
   heapster-service.yml.erb: config/addons/heapster-service.yaml
 
 properties:
+  kube.addons.enable_dns_proxy:
+    description: Deploy cloud foundry DNS proxy add-on
+    default: true
+
   kube.cluster.dns_address:
     description: The cluster dns server address to inject into containers
     default: 10.254.10.254
@@ -28,7 +32,3 @@ properties:
   kube.consul_dns_proxy_address:
     description: The cluster address to use for the consul dns proxy pods
     default: 10.254.10.253
-
-  kube.master_url:
-    description: Load balanced URL that represents the API servers
-    example: api.kube.bosh-lite.com

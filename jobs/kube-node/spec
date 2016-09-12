@@ -21,6 +21,15 @@ properties:
     description: The cluster name
     default: furnace
 
+  kube.cluster.master_url:
+    description: The load balanced URL to the API servers
+    example: https://kube-apiserver.service.cf.internal:6443
+
+  kube.cluster.apiservers:
+    description: The list of API servers (proto://host:port)
+    default:
+    - https://kube-apiserver.service.cf.internal:6443
+
   kube.cluster.dns_address:
     description: The cluster dns server address to inject into containers
     default: 10.254.10.254
@@ -28,6 +37,10 @@ properties:
   kube.cluster.dns_domain:
     description: Domain to use for cluster local DNS lookups
     default: cluster.local
+
+  kube.cluster.use_consul:
+    description: Consul DNS names should be used for node names
+    default: true
 
   kube.node.manifests_dir:
     description: Directory containing manifest to run at startup

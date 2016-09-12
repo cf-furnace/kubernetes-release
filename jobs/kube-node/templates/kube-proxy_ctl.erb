@@ -24,7 +24,7 @@ case $1 in
         --conntrack-max=0 \
         --logtostderr=true \
         --kubeconfig=/var/vcap/jobs/kube-node/config/kubeconfig.yaml \
-        --master=https://kube-apiserver.service.cf.internal:6443 \
+        --master=<%= p("kube.cluster.master_url") %> \
         --proxy-mode=iptables \
         2> >(tee -a $LOG_DIR/kube-proxy.stderr.log | logger -p user.info -t vcap.kube-proxy) \
         1> >(tee -a $LOG_DIR/kube-proxy.stdout.log | logger -p user.error -t vcap.kube-proxy)
