@@ -383,11 +383,11 @@ properties:
         BtOUqjEs1PhdIvxW2B4jV1pYmZJqkgy0zUrjyoWngni4h5oSdRT9810WnIjY1IV2
         Qnw7He4=
         -----END CERTIFICATE-----
+      master_url: http://10.244.24.2:8080
       name: cf-furnace
     etcd:
       machines:
       - kube-etcd.service.cf.internal
-    master_url: http://10.244.24.2:8080
     node:
       client_cert: |+
         -----BEGIN CERTIFICATE-----
